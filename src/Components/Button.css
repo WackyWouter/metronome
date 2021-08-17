@@ -1,9 +1,30 @@
 .button {
     padding: 10px;
-    background-color: blue;
+    background-color: #006be6;
     color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 100%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-transition: 1;
+    transition: background-color 0.5s;
+}
+
+.button:hover{
+    cursor: pointer;
+    background-color:  green;
 }
 
 .button.disabled {
-    background-color: darkgray;
+    background-color: #444444;
 }
+
+.button.round{
+    height: 30px;
+    width: 30px;
+    font-size: 30px;
+}
+

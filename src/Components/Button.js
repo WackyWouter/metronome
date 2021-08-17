@@ -4,11 +4,11 @@ import React from "react";
 const Button = ({name, onClick, extraClass, disabled}) => {
     if (disabled) {
         return (
-            <div className={`button disabled ${extraClass}`}>{name}</div>
+            <div className={`button disabled ${extraClass}`}><span>{name}</span></div>
         );
     }
     return (
-		<div className={`button ${extraClass}`} onClick={onClick}>{name}</div>
+		<div className={`button ${extraClass}`} onClick={onClick}><span>{name}</span></div>
 	);
 	
 };

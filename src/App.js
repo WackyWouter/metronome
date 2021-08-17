@@ -12,14 +12,18 @@ class App extends Component {
     }
 
     // Initialize state and audio
-    state = { sliderValue: 150, barsNum: 2, isPlaying: false, beat: -1, lastTap: 0};
+    state = { sliderValue: 160, barsNum: 2, isPlaying: false, beat: -1, lastTap: 0, taps: []};
     audio = new Audio('sound.mp3');
 
+    componentDidMount(){
+        this.audio.load();
+    }
+
     // Update state slider value
-    updateSliderValue = (event) => {
+    updateSliderValue = (value) => {
         this.setState((prevState) => {
             return {
-                sliderValue: event.target.value
+                sliderValue: value
             };
             // wait for state to be updated before creating new interval
         }, () => {
@@ -61,7 +65,9 @@ class App extends Component {
     // Play sound and keep track of the beat
     // Change the class of the bars according to the beat
     playSound () {
+        this.audio.currentTime = 0;
         this.audio.play();
+
         this.setState((prevState) => {
             return {
                 beat: (this.state.beat + 1) % this.state.barsNum
@@ -89,19 +95,46 @@ class App extends Component {
     }
 
     tapTempo = () => {
+        // Get current time and calculate the interval between now and last tap
         const now =  (new Date()).getTime()
+        const tapInterval = now - this.state.lastTap;
 
-        if(this.state.lastTap > 0){  
-            console.log(now - this.state.lastTap);
-        } 
+        // add tap to the tabs array
+        var tapsArr = this.state.taps;
+        tapsArr.push(tapInterval);
 
-        this.setState({lastTap: now});
+        if (tapsArr.length > 1){
+            // remember only last 4 taps so remove first item if the array holds more than 4
+            if(tapsArr.length > 4){
+                tapsArr.shift();
+            }
+    
+            // Calculate average taps
+            var total = 0;
+            tapsArr.forEach( tap => {
+                total = total + tap;
+            })
+            var averageTap = total / tapsArr.length;
+
+            // Check that the tap tempo doesn't go lower or higher than the slider
+            // 60000 / 300 = 200 and 60000 / 20 = 3000
+            averageTap = averageTap > 3000 ? 3000 : averageTap;
+            averageTap = averageTap < 200 ? 200 : averageTap;
+
+            // Update slider value and with that update bpm
+            this.updateSliderValue(Math.round( 60000 / averageTap));
+        }
+
+        // Set now as last tap
+        this.setState({lastTap: now, taps: tapsArr});
     }
 
+    // Add one bar
     addBar = () => {
         this.setState({barsNum: this.state.barsNum + 1});
     }
 
+    // Remove one bar
     removeBar = () => {
         this.setState({barsNum: this.state.barsNum - 1});
     }
@@ -111,20 +144,33 @@ class App extends Component {
         return (
             <div className="con">
                 <div><h1>Metronome</h1></div>
-                <div className="row" ref={this.myRef}>
-                    {this.renderBars()}
-                </div>
-                <h2>{this.state.sliderValue} BPM</h2>
-                <Slider onChange={this.updateSliderValue} value={this.state.sliderValue}/>
-                <Button onClick={this.tapTempo} name="Tap Tempo" />
-                <Button onClick={this.metronome} name={this.state.isPlaying ? 'Stop' : 'Start'} />
 
-                <div className="row"> 
-                    <Button onClick={this.removeBar} name='- bar' disabled={this.state.barsNum === 1 ? true : false}/>
-                    <Button onClick={this.addBar} name='+ bar' />
-                </div>                 
+                <h1>{this.state.beat !== -1 ? this.state.beat +1 : '-'}</h1>
+                <div className="col">
+                    <div className="row" ref={this.myRef}>
+                        {this.renderBars()}
+                    </div>
+                    <div className="row"> 
+                        <Button extraClass="round" onClick={this.removeBar} name='-' disabled={this.state.barsNum === 2 ? true : false}/>
+                        <Button extraClass="round" onClick={this.addBar} name='+' />
+                    </div> 
+                </div>
+
+                <h1>{this.state.sliderValue} BPM</h1>
+                <Slider onChange={(event) => this.updateSliderValue(event.target.value)} value={this.state.sliderValue}/>
+
+               <div className="row">
+                    <Button onClick={this.tapTempo} name="Tap Tempo" disabled={this.state.isPlaying ? false : true}/>
+                    <Button onClick={this.metronome} name={this.state.isPlaying ? 'Stop' : 'Start'} />
+               </div>
+                
             </div>
         );
+    }
+    
+    // Stop timer
+    componentWillUnmount() {
+        clearInterval(this.timer);
     }
 };
 

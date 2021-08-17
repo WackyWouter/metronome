@@ -4,12 +4,44 @@
 
 .slider{
     width: 100%;
+    appearance: none;
+    border-radius: 10px;
+    height: 15px;
+    outline: none;
+    background-color: lightgrey;
+    transition: background-color 0.5s;
 }
 
-.slider::-webkit-slider-thumb {
+.slider:hover{
+    background-color: #9e9d9d;
+}
+
+.slider::-webkit-slider-thumb{
+    appearance: none;
     cursor: pointer; 
-  }
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: #006be6;
+    transition: background-color 0.5s;
+}
+
+.slider::-moz-range-thumb{
+    cursor: pointer; 
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: #006be6;
+    transition: background-color 0.5s;
+}
+
+.slider::-webkit-slider-thumb:hover{
+    background-color: green;
+}
+.slider::-moz-range-thumb:hover{
+    background-color: green;
+}
+
+
+
   
-  .slider::-moz-range-thumb {
-    cursor: pointer; 
-  }
