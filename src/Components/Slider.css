@@ -1,0 +1,15 @@
+.sliderCon{
+    width: 80%;
+}
+
+.slider{
+    width: 100%;
+}
+
+.slider::-webkit-slider-thumb {
+    cursor: pointer; 
+  }
+  
+  .slider::-moz-range-thumb {
+    cursor: pointer; 
+  }
